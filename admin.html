@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Chat</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body { font-family: Arial; background: #dfe6e9; }
+    #chatBox { height: 300px; overflow-y: auto; background: #fff; padding: 10px; }
+    .bubble { background: #dcf8c6; margin: 5px; padding: 8px; border-radius: 10px; text-align: right; }
+    .userBubble { background: #fff; margin: 5px; padding: 8px; border-radius: 10px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h3>Halaman Admin</h3>
+  <div id="chatBox"></div>
+  <textarea id="pesanAdmin" placeholder="Balasan admin..."></textarea>
+  <button onclick="kirimAdmin()">Kirim</button>
+
+  <script>
+    const firebaseConfig = {
+      // GANTI DENGAN MILIKMU
+      apiKey: "xxx",
+      authDomain: "xxx.firebaseapp.com",
+      databaseURL: "https://xxx.firebaseio.com",
+      projectId: "xxx",
+      storageBucket: "xxx.appspot.com",
+      messagingSenderId: "xxx",
+      appId: "xxx"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function kirimAdmin() {
+      const pesan = document.getElementById("pesanAdmin").value;
+      if (pesan.trim()) {
+        db.ref("chat").push({ dari: "admin", teks: pesan });
+        document.getElementById("pesanAdmin").value = "";
+      }
+    }
+
+    db.ref("chat").on("child_added", function(snapshot) {
+      const data = snapshot.val();
+      const div = document.createElement("div");
+      div.className = data.dari === "admin" ? "bubble" : "userBubble";
+      div.innerText = data.teks;
+      document.getElementById("chatBox").appendChild(div);
+      document.getElementById("chatBox").scrollTop = chatBox.scrollHeight;
+    });
+  </script>
+</body>
+</html>
